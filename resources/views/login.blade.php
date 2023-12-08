@@ -11,9 +11,10 @@
                 {{-- <p class="login-box-msg">Sign in to start your session</p> --}}
                 <h3 class="login-box-msg">Login</h1>
 
-                    <form action="../../index3.html" method="post">
+                    <form action="{{ route('authenticate') }}" method="post">
+                        @csrf
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Username">
+                            <input type="text" class="form-control" name='username' placeholder="Username">
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
@@ -21,7 +22,7 @@
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control" placeholder="Password">
+                            <input type="password" class="form-control" name="password" placeholder="Password">
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-lock"></span>

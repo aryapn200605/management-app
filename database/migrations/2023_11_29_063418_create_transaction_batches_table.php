@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('transaction_batches', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice')->default('TRX-' . microtime(true) * 10000);
+            $table->string('invoice');
             $table->float('paid_amount');
             $table->string('payment_method');
-            $table->srting('deadline');
+            $table->string('deadline');
             $table->integer('type'); // Type Pemasukan / Pengeluaran
             $table->integer('status'); // Status Lunas / Belum Lunas
             $table->timestamps();

@@ -24,12 +24,11 @@ class AuthenticationController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('home')->withSuccess('Berhasil Melakukan Login');
+            return redirect()->route('dashboard')->withSuccess('Berhasil Melakukan Login');
         }
 
         return redirect()->route('login')->withError('Username atau Password anda salah');
     }
-
 
     public function logout()
     {

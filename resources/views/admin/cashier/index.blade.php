@@ -13,14 +13,15 @@
             <div class="card-header">
                 <h3 class="card-title">E-Nota</h3>
             </div>
-            <form class="form-horizontal">
+            <form action="{{ route('transaction') }}" method="post" class="form-horizontal">
+                @csrf
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Tanggal</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control tgl-input" placeholder="Tanggal" disabled>
+                                    <input type="text" class="form-control tgl-input" name="date" placeholder="Tanggal" disabled>
                                 </div>
                             </div>
                         </div>
@@ -28,9 +29,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Nama</label>
                                 <div class="input-group col-sm-9 ">
-                                    <input type="text" class="form-control" placeholder="Nama Lengkap">
+                                    <input type="text" class="form-control" name="customer" id="name-input" placeholder="Nama Lengkap">
                                     <div class="input-group-append">
-                                        <button type="button" class="btn btn-danger">Cari</button>
+                                        <button type="button" class="btn btn-danger find-customer-btn">Cari</button>
                                     </div>
                                 </div>
                             </div>
@@ -39,7 +40,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">No. Invoice</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" placeholder="No. Invoice"
+                                    <input type="text" class="form-control" name="invoice" placeholder="No. Invoice"
                                         value="@invoiceNumber" disabled>
                                 </div>
                             </div>
@@ -48,7 +49,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">No. Handphone</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" placeholder="No. handphone">
+                                    <input type="text" class="form-control" name="phone" id="phone-input" placeholder="No. handphone">
                                 </div>
                             </div>
                         </div>
@@ -64,48 +65,19 @@
                                         <th style="width: 2.5%">Label</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="align-middle text-center">
-                                            1
-                                        </td>
-                                        <td class="align-middle">
-                                            Produk 1
-                                        </td>
-                                        <td><input type="text" class="form-control text-center" placeholder="Quantity">
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input type="text" class="form-control text-right currency"
-                                                    value="@currency(25000)">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input type="text" class="form-control text-right currency"
-                                                    value="@currency(25000)">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-outline-danger btn-block">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                <tbody id="table-product">
+                                    {{-- Table Append --}}
+                                </tbody>
+                                <tfoot>
                                     <tr>
                                         <td colspan="6" class="align-middle">
-                                            <button type="button" class="btn btn-info btn-block">
+                                            <button type="button" class="btn btn-info btn-block find-product-btn">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </td>
                                     </tr>
-                                </tbody>
+
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -133,8 +105,8 @@
                                         <th class="align-middle" style="width:50%">Tenggat Waktu (Deadline)</th>
                                         <td>
                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input"
-                                                    data-target="#reservationdate" />
+                                                <input type="text" class="form-control datetimepicker-input" name="deadline"
+                                                    data-target="#reservationdate" id="deadline" />
                                                 <div class="input-group-append" data-target="#reservationdate"
                                                     data-toggle="datetimepicker">
                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -149,8 +121,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right currency"
-                                                    value="@currency(25000)" disabled>
+                                                <input type="text" class="form-control text-right number-separator" name="grand_total"
+                                                    value="0" id="grand-total" disabled>
                                             </div>
                                         </td>
                                     </tr>
@@ -161,8 +133,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right currency"
-                                                    value="@currency(25000)">
+                                                <input type="text" class="form-control text-right number-separator" value="0" name="deposits"
+                                                    id="deposits">
                                             </div>
                                         </td>
                                     </tr>
@@ -173,8 +145,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right currency"
-                                                    value="@currency(25000)" disabled>
+                                                <input type="text" class="form-control text-right number-separator" name="paid_amount"
+                                                    value="0" id="pendingAmount" disabled>
                                             </div>
                                         </td>
                                     </tr>
@@ -188,14 +160,9 @@
                     <!-- this row will not appear when printing -->
                     <div class="row no-print">
                         <div class="col-12">
-                            <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i
-                                    class="fas fa-print"></i> Print</a>
-                            <button type="button" class="btn btn-success float-right"><i class="far fa-credit-card"></i>
+                            <button type="submit" class="btn btn-success float-right"><i class="far fa-credit-card"></i>
                                 Bayar
                             </button>
-                            {{-- <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
-                                <i class="fas fa-download"></i> Generate PDF
-                            </button> --}}
                         </div>
                     </div>
                 </div>
@@ -205,8 +172,325 @@
         <!-- /.card -->
     </section>
 
+    @component('components.modal', [
+        'id' => 'modal-customer',
+    ])
+        @slot('title', 'Cari Customer')
+
+        @slot('body')
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Nama Customer">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-primary">Cari</button>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped mt-2">
+                <thead>
+                    <tr class="text-center">
+                        <th class="align-middle" style="width: 2%">No</th>
+                        <th class="align-middle" style="width: 30%">Nama</th>
+                        <th class="align-middle" style="width: 30%">No. Handphone</th>
+                        <th class="align-middle" style="width: 30%">Alamat</th>
+                        <th class="align-middle" style="width: 8%">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center" id="customer-table-body">
+                    <!-- Customer data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        @endslot
+    @endcomponent
+
+    @component('components.modal', [
+        'id' => 'modal-product',
+    ])
+        @slot('title', 'Cari Produk')
+
+        @slot('body')
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Nama Produk">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-primary">Cari</button>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped mt-2">
+                <thead>
+                    <tr class="text-center">
+                        <th class="align-middle" style="width: 2%">No</th>
+                        <th class="align-middle" style="width: 45%">Nama</th>
+                        <th class="align-middle" style="width: 45%">Harga Satuan</th>
+                        <th class="align-middle" style="width: 8%">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center" id="product-table-body">
+                    <!-- Customer data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        @endslot
+    @endcomponent
 @endsection
 
+
 @section('script')
-    <script></script>
+    <script>
+        var productObject = [];
+        var productIndex = 1;
+
+        $('.find-customer-btn').on('click', function() {
+            url = "{{ route('findAllCustomer') }}"
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    var html = '';
+                    $.each(data, function(index, customer) {
+                        html += '<tr>' +
+                            '<td class="align-middle">' + (index + 1) + '</td>' +
+                            '<td class="align-middle">' + customer.name + '</td>' +
+                            '<td class="align-middle">' + customer.phone + '</td>' +
+                            '<td class="align-middle">' + customer.address + '</td>' +
+                            '<td class="align-middle">' +
+                            '<button type="button" class="btn btn-success" onclick="selectCustomer(' +
+                            customer.id + ', \'' + customer.name + '\', \'' + customer.phone +
+                            '\')">Pilih</button>' +
+                            '</td>' +
+                            '</tr>';
+                    });
+
+                    $('#customer-table-body').html(html);
+
+                    $('#modal-customer').modal('show');
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        function selectCustomer(customerId, customerName, customerPhone) {
+            $('#modal-customer').modal('hide');
+            $('#name-input').val(customerName);
+            $('#phone-input').val(customerPhone);
+        }
+
+        $('.find-product-btn').on('click', function() {
+            url = "{{ route('findAllProduct') }}"
+
+            productIds = productObject.map(function(product) {
+                return product.id;
+            })
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    var html = '';
+                    $.each(data, function(index, product) {
+                        if (productIds.indexOf(product.id) === -1) {
+                            html += '<tr>' +
+                                '<td class="align-middle">' + (index + 1) + '</td>' +
+                                '<td class="align-middle">' + product.name + '</td>' +
+                                '<td class="align-middle">' + product.price + '</td>' +
+                                '<td class="align-middle">' +
+                                '<button type="button" class="btn btn-success" onclick="selectProduct(' +
+                                product.id + ', \'' + product.name + '\', \'' + product.price +
+                                '\')">Pilih</button>' +
+                                '</td>' +
+                                '</tr>';
+                        }
+                    });
+
+                    $('#product-table-body').html(html);
+
+                    $('#modal-product').modal('show');
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        $('#table-product').on('input', '[id^="qty_"]', function() {
+            updateTotal($(this).attr('id'));
+        });
+
+        $('#table-product').on('input', '[id^="price_"]', function() {
+            updatePrice($(this).attr('id'));
+        });
+
+        $('#table-product').on('input', '[id^="total_"]', function() {
+            updateTotalAndPrice($(this).attr('id'));
+        });
+
+        $('#deposits').on('input', function() {
+            updateDeposit();
+        });
+
+        function selectProduct(id, name, price) {
+            $('#modal-product').modal('hide');
+
+            var object = {
+                id: id,
+                name: name,
+                qty: 1,
+                price: price,
+                total: price
+            }
+
+            productObject.push(object);
+            renderTable()
+        }
+
+        function renderTable() {
+            var productIndex = 1;
+            var html = productObject.map(product => `
+                <tr>
+                    <td class="align-middle">${productIndex++}</td>
+                    <td class="align-middle">
+                        <input type="text" class="form-control text-center number-separator" value="${product.name}" 
+                            id="name_${product.id}" placeholder="Nama Produk" name="name[]" disabled>
+                    </td>
+                    <td class="align-middle">
+                        <input type="text" class="form-control text-center number-separator" value="${product.qty}" 
+                            id="qty_${product.id}" placeholder="Quantity" name="qty[]">
+                    </td>
+                    <td class="align-middle">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp.</span>
+                            </div>
+                            <input type="text" class="form-control text-right number-separator" value="${product.price}" 
+                                id="price_${product.id}" name="price[]">
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp.</span>
+                            </div>
+                            <input type="text" class="form-control text-right number-separator" value="${product.total}" 
+                                id="total_${product.id}" name="total[]">
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-block" 
+                                onclick="removeProductRow(${product.id})">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+
+            calculateGrandTotal();
+            updateDeposit();
+            $('#table-product').html(html);
+        }
+
+        function removeProductRow(productId) {
+            var index = productObject.findIndex(product => product.id == productId);
+            if (index !== -1) {
+                productObject.splice(index, 1);
+                renderTable();
+            }
+        }
+
+        function updateTotal(qtyId) {
+            var productId = qtyId.split('_')[1];
+            var priceId = 'price_' + productId;
+            var totalId = 'total_' + productId;
+
+            var qty = $('#' + qtyId).val();
+            var price = $('#' + priceId).val();
+
+            var total = Math.round(parseFloat(qty) * parseFloat(price));
+
+            $('#' + totalId).val(total);
+
+            updateProductObject(productId, 'qty', Math.round(qty));
+            updateProductObject(productId, 'total', total);
+        }
+
+        function updatePrice(priceId) {
+            var productId = priceId.split('_')[1];
+            var qtyId = 'qty_' + productId;
+            var totalId = 'total_' + productId;
+
+            var qtyInput = $('#' + qtyId);
+            var priceInput = $('#' + priceId);
+            var totalInput = $('#' + totalId);
+
+            var qty = Math.round(parseFloat(qtyInput.val())) || 0;
+            var price = Math.round(parseFloat(priceInput.val())) || 0;
+
+            if (qty < 1 || isNaN(qty)) {
+                qtyInput.val(1);
+                qty = 1;
+            }
+
+            var total = qty * price;
+
+            totalInput.val(total);
+
+            updateProductObject(productId, 'qty', qty);
+            updateProductObject(productId, 'total', total);
+        }
+
+        function updateTotalAndPrice(totalId) {
+            var productId = totalId.split('_')[1];
+            var qtyId = 'qty_' + productId;
+            var priceId = 'price_' + productId;
+
+            var qtyInput = $('#' + qtyId);
+            var priceInput = $('#' + priceId);
+            var totalInput = $('#' + totalId);
+
+            var qty = Math.round(parseFloat(qtyInput.val())) || 0;
+            var total = Math.round(parseFloat(totalInput.val())) || 0;
+
+            if (qty < 1 || isNaN(qty)) {
+                qtyInput.val(1);
+                qty = 1;
+            }
+
+            var price = Math.round(total / qty);
+            priceInput.val(price);
+
+            totalInput.val(qty * price);
+
+            updateProductObject(productId, 'qty', qty);
+            updateProductObject(productId, 'total', total);
+        }
+
+        function updateProductObject(productId, field, value) {
+            var index = productObject.findIndex(product => product.id == productId);
+            if (index !== -1) {
+                productObject[index][field] = value;
+                calculateGrandTotal();
+            }
+        }
+
+        function calculateGrandTotal() {
+            var grandTotal = 0;
+            productObject.forEach(product => {
+                grandTotal += parseInt(product.total) || 0;
+            });
+            $('#grand-total').val(grandTotal);
+            $('#pendingAmount').val(grandTotal);
+        }
+
+        function updateDeposit() {
+            var deposit = parseInt($('#deposits').val()) || 0;
+            var grandTotal = parseInt($('#grand-total').val()) || 0;
+
+            if (deposit > grandTotal) {
+                $('#deposits').val(grandTotal);
+                deposit = grandTotal;
+            }
+
+            var pendingAmount = grandTotal - deposit;
+            $('#pendingAmount').val(pendingAmount);
+        }
+    </script>
 @endsection

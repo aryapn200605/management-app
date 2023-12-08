@@ -41,12 +41,38 @@
 <script src="{{ asset('lte/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
 <script src="{{ asset('lte/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
 <script src="{{ asset('lte/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
-{{-- Sweet Alert 2 --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-{{-- Tiny Mce --}}
+<!-- SweetAlert2 -->
+<script src="{{ asset('lte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<!-- Toastr -->
+<script src="{{ asset('lte/plugins/toastr/toastr.min.js') }}"></script>
+
+
+@if (session('success'))
+    <script>
+        toastr.success('{{ session('success') }}');
+    </script>
+@endif
+
+@if (session('info'))
+    <script>
+        toastr.info('{{ session('info') }}');
+    </script>
+@endif
+
+@if (session('error'))
+    <script>
+        toastr.error('{{ session('error') }}');
+    </script>
+@endif
+
+@if (session('warning'))
+    <script>
+        toastr.warning('{{ session('warning') }}');
+    </script>
+@endif
+
 <script>
     const logout = () => {
-        console.log("halooo");
         Swal.fire({
             title: 'Ingin logout dari sistem?',
             showCancelButton: true,
@@ -54,14 +80,14 @@
             cancelButtonText: 'Batal',
             icon: 'warning'
         }).then((result) => {
-            // if (result.isConfirmed) {
-            //     $.ajax({
-            //         url: "{{ url('/logout') }}",
-            //         type: 'GET'
-            //     }).then(() => {
-            //         window.location.href = '/login'
-            //     })
-            // }
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ route('logout') }}",
+                    type: 'GET'
+                }).then(() => {
+                    window.location.href = '/login'
+                })
+            }
         })
     }
 
@@ -73,7 +99,7 @@
                 responsive: true,
                 lengthChange: false,
                 autoWidth: false,
-                buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                // buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
             })
             .buttons()
             .container()
@@ -83,8 +109,50 @@
             format: 'L'
         });
 
+        $(".rupiah").on("input", function() {
+            var sanitizedValue = $(this).val().replace(/[^0-9]/g, '');
+            var numericValue = parseInt(sanitizedValue, 10);
+            $(this).attr('data-original-value', isNaN(numericValue) ? 0 : numericValue);
+            if (numericValue > 1000000000000) {
+                numericValue = 1000000000000;
+            }
+            var rupiahFormat = numericValue.toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&.');
+            $(this).val(rupiahFormat);
+        });
+
         var today = new Date().toISOString().split('T')[0];
         $('.datepicker').attr('min', today);
+
+        function addSeparator(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Fungsi untuk menghapus separator dari angka
+        function removeSeparator(number) {
+            return number.replace(/,/g, '');
+        }
+
+        // Fungsi untuk memformat angka dengan separator ribuan
+        function formatNumberWithSeparator(element) {
+            var value = removeSeparator(element.val());
+            var formattedValue = addSeparator(value);
+            element.val(formattedValue);
+        }
+
+        // Menangani perubahan fokus pada elemen dengan kelas 'separator'
+        $('.separator').on('focus', function() {
+            // Hapus separator saat elemen dalam fokus
+            var $element = $(this);
+            var value = removeSeparator($element.val());
+            $element.val(value);
+        });
+
+        // Menangani kehilangan fokus pada elemen dengan kelas 'separator'
+        $('.separator').on('blur', function() {
+            // Tambahkan separator saat elemen kehilangan fokus
+            var $element = $(this);
+            formatNumberWithSeparator($element);
+        });
 
         function updateTanggalJam() {
             var now = new Date();
@@ -103,18 +171,6 @@
 
             $('.tgl-input').val(dateTimeString);
         }
-
-        function addSeparator(input) {
-            var number = input.val().replace(/\D/g, '');
-
-            var formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-            input.val(formattedNumber);
-        }
-
-        $('.currency').on('input', function() {
-            addSeparator($(this));
-        });
 
         updateTanggalJam();
 
