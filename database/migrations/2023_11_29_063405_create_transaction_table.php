@@ -17,7 +17,6 @@ return new class extends Migration
             $table->float('unit_price');
             $table->float('total_price');
             $table->string('product_id');
-            $table->string('customer_id');
             $table->string('batch_id');
             $table->timestamps();
         });

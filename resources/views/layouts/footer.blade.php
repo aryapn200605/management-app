@@ -123,37 +123,6 @@
         var today = new Date().toISOString().split('T')[0];
         $('.datepicker').attr('min', today);
 
-        function addSeparator(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // Fungsi untuk menghapus separator dari angka
-        function removeSeparator(number) {
-            return number.replace(/,/g, '');
-        }
-
-        // Fungsi untuk memformat angka dengan separator ribuan
-        function formatNumberWithSeparator(element) {
-            var value = removeSeparator(element.val());
-            var formattedValue = addSeparator(value);
-            element.val(formattedValue);
-        }
-
-        // Menangani perubahan fokus pada elemen dengan kelas 'separator'
-        $('.separator').on('focus', function() {
-            // Hapus separator saat elemen dalam fokus
-            var $element = $(this);
-            var value = removeSeparator($element.val());
-            $element.val(value);
-        });
-
-        // Menangani kehilangan fokus pada elemen dengan kelas 'separator'
-        $('.separator').on('blur', function() {
-            // Tambahkan separator saat elemen kehilangan fokus
-            var $element = $(this);
-            formatNumberWithSeparator($element);
-        });
-
         function updateTanggalJam() {
             var now = new Date();
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->float('paid_amount');
             $table->string('payment_method');
             $table->string('deadline');
+            $table->string('customer_id');
             $table->integer('type'); // Type Pemasukan / Pengeluaran
             $table->integer('status'); // Status Lunas / Belum Lunas
             $table->timestamps();

@@ -21,7 +21,8 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Tanggal</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control tgl-input" name="date" placeholder="Tanggal" disabled>
+                                    <input type="text" class="form-control tgl-input" name="date"
+                                        placeholder="Tanggal" readonly>
                                 </div>
                             </div>
                         </div>
@@ -29,7 +30,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Nama</label>
                                 <div class="input-group col-sm-9 ">
-                                    <input type="text" class="form-control" name="customer" id="name-input" placeholder="Nama Lengkap">
+                                    <input type="hidden" id="customer-id"name="customer_id" value="">
+                                    <input type="text" class="form-control" name="customer" id="name-input"
+                                        placeholder="Nama Lengkap" required>
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-danger find-customer-btn">Cari</button>
                                     </div>
@@ -41,7 +44,7 @@
                                 <label class="col-sm-3 col-form-label">No. Invoice</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="invoice" placeholder="No. Invoice"
-                                        value="@invoiceNumber" disabled>
+                                        value="@invoiceNumber" readonly>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +52,8 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">No. Handphone</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="phone" id="phone-input" placeholder="No. handphone">
+                                    <input type="text" class="form-control" name="phone" id="phone-input"
+                                        placeholder="No. handphone" required>
                                 </div>
                             </div>
                         </div>
@@ -88,14 +92,16 @@
                         <!-- accepted payments column -->
                         <div class="col-3">
                             <p class="lead">Status Pembayaran:</p>
-                            <button type="button" class="btn btn-danger">Belum Lunas</button>
+                            <button type="button" class="btn btn-danger" id="payment-status">Belum Lunas</button>
                         </div>
                         <div class="col-3">
                             <p class="lead">Metode Pembayaran:</p>
                             <div class="btn-group">
-                                <button type="button" class="btn btn-info">Cash</button>
-                                <button type="button" class="btn btn-info">Transfer</button>
+                                <button type="button" class="btn btn-primary payment" id="cash">Cash</button>
+                                <button type="button" class="btn btn-outline-secondary payment"
+                                    id="transfer">Transfer</button>
                             </div>
+                            <input type="hidden" id="payment-method" name="payment_method" value="cash">
                         </div>
                         <!-- /.col -->
                         <div class="col-6">
@@ -105,8 +111,9 @@
                                         <th class="align-middle" style="width:50%">Tenggat Waktu (Deadline)</th>
                                         <td>
                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input" name="deadline"
-                                                    data-target="#reservationdate" id="deadline" />
+                                                <input type="text" class="form-control datetimepicker-input"
+                                                    name="deadline" data-target="#reservationdate" id="deadline"
+                                                    required />
                                                 <div class="input-group-append" data-target="#reservationdate"
                                                     data-toggle="datetimepicker">
                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -121,8 +128,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right number-separator" name="grand_total"
-                                                    value="0" id="grand-total" disabled>
+                                                <input type="text" class="form-control text-right separator"
+                                                    name="grand_total" value="0" id="grand-total" readonly>
                                             </div>
                                         </td>
                                     </tr>
@@ -133,8 +140,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right number-separator" value="0" name="deposits"
-                                                    id="deposits">
+                                                <input type="text" class="form-control text-right separator"
+                                                    value="0" name="deposits" id="deposits">
                                             </div>
                                         </td>
                                     </tr>
@@ -145,8 +152,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input type="text" class="form-control text-right number-separator" name="paid_amount"
-                                                    value="0" id="pendingAmount" disabled>
+                                                <input type="text" class="form-control text-right separator"
+                                                    name="paid_amount" value="0" id="pendingAmount" readonly>
                                             </div>
                                         </td>
                                     </tr>
@@ -160,7 +167,8 @@
                     <!-- this row will not appear when printing -->
                     <div class="row no-print">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-success float-right"><i class="far fa-credit-card"></i>
+                            <button type="submit" class="btn btn-success float-right" id="btn-bayar" disabled><i
+                                    class="far fa-credit-card"></i>
                                 Bayar
                             </button>
                         </div>
@@ -270,9 +278,17 @@
 
         function selectCustomer(customerId, customerName, customerPhone) {
             $('#modal-customer').modal('hide');
+            $('#customer-id').val(customerId);
             $('#name-input').val(customerName);
             $('#phone-input').val(customerPhone);
         }
+
+        $('.payment').click(function() {
+            var selectedPayment = $(this).attr('id');
+            $('#' + selectedPayment).removeClass('btn-outline-secondary').addClass('btn-primary');
+            $('.payment').not('#' + selectedPayment).removeClass('btn-primary').addClass('btn-outline-secondary');
+            $('#payment-method').val(selectedPayment);
+        });
 
         $('.find-product-btn').on('click', function() {
             url = "{{ route('findAllProduct') }}"
@@ -311,15 +327,15 @@
             });
         });
 
-        $('#table-product').on('input', '[id^="qty_"]', function() {
+        $('#table-product').on('change', '[id^="qty_"]', function() {
             updateTotal($(this).attr('id'));
         });
 
-        $('#table-product').on('input', '[id^="price_"]', function() {
+        $('#table-product').on('change', '[id^="price_"]', function() {
             updatePrice($(this).attr('id'));
         });
 
-        $('#table-product').on('input', '[id^="total_"]', function() {
+        $('#table-product').on('change', '[id^="total_"]', function() {
             updateTotalAndPrice($(this).attr('id'));
         });
 
@@ -347,12 +363,13 @@
             var html = productObject.map(product => `
                 <tr>
                     <td class="align-middle">${productIndex++}</td>
+                    <input type="hidden" id="product-id" name="product_id[]" value="${product.id}">
                     <td class="align-middle">
-                        <input type="text" class="form-control text-center number-separator" value="${product.name}" 
+                        <input type="text" class="form-control text-center separator" value="${product.name}" 
                             id="name_${product.id}" placeholder="Nama Produk" name="name[]" disabled>
                     </td>
                     <td class="align-middle">
-                        <input type="text" class="form-control text-center number-separator" value="${product.qty}" 
+                        <input type="text" class="form-control text-center separator" value="${product.qty}" 
                             id="qty_${product.id}" placeholder="Quantity" name="qty[]">
                     </td>
                     <td class="align-middle">
@@ -360,7 +377,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp.</span>
                             </div>
-                            <input type="text" class="form-control text-right number-separator" value="${product.price}" 
+                            <input type="text" class="form-control text-right separator" value="${product.price}" 
                                 id="price_${product.id}" name="price[]">
                         </div>
                     </td>
@@ -369,7 +386,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp.</span>
                             </div>
-                            <input type="text" class="form-control text-right number-separator" value="${product.total}" 
+                            <input type="text" class="form-control text-right separator" value="${product.total}" 
                                 id="total_${product.id}" name="total[]">
                         </div>
                     </td>
@@ -385,6 +402,10 @@
 
             calculateGrandTotal();
             updateDeposit();
+
+            var isProductObjectNotEmpty = productObject.length > 0;
+            $('#btn-bayar').prop('disabled', !isProductObjectNotEmpty);
+
             $('#table-product').html(html);
         }
 
@@ -434,6 +455,7 @@
             totalInput.val(total);
 
             updateProductObject(productId, 'qty', qty);
+            updateProductObject(productId, 'price', price);
             updateProductObject(productId, 'total', total);
         }
 
@@ -460,6 +482,7 @@
             totalInput.val(qty * price);
 
             updateProductObject(productId, 'qty', qty);
+            updateProductObject(productId, 'price', price);
             updateProductObject(productId, 'total', total);
         }
 
@@ -483,10 +506,15 @@
         function updateDeposit() {
             var deposit = parseInt($('#deposits').val()) || 0;
             var grandTotal = parseInt($('#grand-total').val()) || 0;
+            var paymentStatusButton = $('#payment-status');
 
-            if (deposit > grandTotal) {
+            if (deposit >= grandTotal) {
                 $('#deposits').val(grandTotal);
                 deposit = grandTotal;
+
+                paymentStatusButton.removeClass('btn-danger').addClass('btn-success').text('Lunas');
+            } else {
+                paymentStatusButton.removeClass('btn-success').addClass('btn-danger').text('Belum Lunas');
             }
 
             var pendingAmount = grandTotal - deposit;
