@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ProductsImport;
 use App\Models\ProductModel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductContorller extends Controller
 {
@@ -41,6 +43,16 @@ class ProductContorller extends Controller
         $product->save();
 
         return redirect()->route('products')->with('success', 'Produk berhasil ditambahkan');
+    }
+
+    public function createExcel(Request $request)
+    {
+        try {
+            Excel::import(new ProductsImport, $request->file('file'));
+            return redirect()->route('products')->with('success', 'Produk berhasil ditambahkan dari Excel');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function show(string $id)

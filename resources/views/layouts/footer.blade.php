@@ -45,6 +45,8 @@
 <script src="{{ asset('lte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Toastr -->
 <script src="{{ asset('lte/plugins/toastr/toastr.min.js') }}"></script>
+<!-- Select2 -->
+<script src="{{ asset('lte/plugins/select2/js/select2.full.min.js') }}"></script>
 
 
 @if (session('success'))
@@ -92,7 +94,9 @@
     }
 
     $(document).ready(function() {
-        $("#datatable")
+        $('.select2').select2()
+        
+        $(".datatable")
             .DataTable({
                 pageLength: 10,
                 ordering: false,

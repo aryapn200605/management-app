@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('transaction', function (Blueprint $table) {
             $table->id();
             $table->integer('qty');
-            $table->float('unit_price');
-            $table->float('total_price');
+            $table->string('unit_price');
+            $table->string('total_price');
             $table->string('product_id');
             $table->string('batch_id');
             $table->timestamps();

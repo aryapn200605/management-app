@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductContorller;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,13 +24,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         return view('admin.dashboards.index');
     })->name('dashboard');
 
-    Route::get('/buku-besar', function () {
-        return view('admin.data-books.index');
-    })->name('data-books');
+    Route::controller(DashboardController::class)->prefix('dashboard')->group(function () {
+        Route::get('/', 'index')                    ->name('dashboard');
+    });
 
-    Route::get('/transaksi', function () {
-        return view('admin.transactions.index');
-    })->name('transactions');
+    Route::get('/orders', function () {
+        return view('admin.orders.index');
+    })->name('orders');
+
+    Route::controller(TransactionController::class)->prefix('transaction')->group(function () {
+        Route::get('/', 'index')                    ->name('transactions');
+        Route::get('/findOne/{id}', 'findOne')      ->name('findOne');
+    });
 
     Route::controller(CashierController::class)->prefix('cashier')->group(function () {
         Route::get('/', 'index')                    ->name('cashier');
@@ -51,6 +58,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::patch('{product}', 'update')         ->name('update-product');
         Route::delete('{product}', 'destroy')       ->name('delete-product');
         Route::get('/find-all', 'findAllProduct')   ->name('findAllProduct');
+        Route::post('/create-excel', 'createExcel') ->name('createExcel');
     });
     
     Route::get('/stok-barang', function () {
@@ -63,4 +71,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthenticationController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthenticationController::class, 'authenticate'])->name('authenticate');
+});
+
+Route::get('/', function () {
+    return redirect()->route('login'); // Ganti 'login' dengan nama rute login Anda
 });

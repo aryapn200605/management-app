@@ -5,6 +5,7 @@
 @section('content-header')
 
     <button class="btn btn-primary" data-toggle="modal" data-target="#modal-create">Tambah Jenis Produk</button>
+    <button class="btn btn-success" data-toggle="modal" data-target="#modal-excel">Tambah Excel</button>
 
 @endsection
 
@@ -12,7 +13,7 @@
     <section>
         <div class="card">
             <div class="card-body">
-                <table class="table table-bordered table-striped" id="datatable">
+                <table class="datatable table table-bordered table-striped">
                     <thead>
                         <tr class="text-center">
                             <th class="align-middle" style="width: 2%">No</th>
@@ -106,6 +107,26 @@
 
             @slot('button')
                 <button type="submit" class="btn btn-primary">Ubah</button>
+            </form>
+        @endslot
+    @endcomponent
+    
+    @component('components.modal', [
+        'id' => 'modal-excel',
+    ])
+        @slot('title', 'Tambah Produk Menggunakan Excel')
+
+        @slot('body')
+            <form action="{{ route('createExcel') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label>File Excel</label>
+                    <input type="file" class="form-control" name="file" placeholder="Masukan File Produk" required>
+                </div>
+            @endslot
+
+            @slot('button')
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
         @endslot
     @endcomponent

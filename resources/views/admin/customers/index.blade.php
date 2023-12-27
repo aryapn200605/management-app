@@ -11,7 +11,7 @@
     <section>
         <div class="card">
             <div class="card-body">
-                <table class="table table-bordered table-striped" id="datatable">
+                <table class="datatable table table-bordered table-striped">
                     <thead>
                         <tr class="text-center">
                             <th class="align-middle" style="width: 2%">No</th>

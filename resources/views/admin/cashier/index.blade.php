@@ -90,18 +90,26 @@
                 <div class="card-footer">
                     <div class="row">
                         <!-- accepted payments column -->
-                        <div class="col-3">
-                            <p class="lead">Status Pembayaran:</p>
-                            <button type="button" class="btn btn-danger" id="payment-status">Belum Lunas</button>
-                        </div>
-                        <div class="col-3">
-                            <p class="lead">Metode Pembayaran:</p>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary payment" id="cash">Cash</button>
-                                <button type="button" class="btn btn-outline-secondary payment"
-                                    id="transfer">Transfer</button>
+                        <div class="row col-6">
+                            <div class="col-6">
+                                <p class="lead">Status Pembayaran:</p>
+                                <button type="button" class="btn btn-danger" id="payment-status">Belum Lunas</button>
                             </div>
-                            <input type="hidden" id="payment-method" name="payment_method" value="cash">
+                            <div class="col-6">
+                                <p class="lead">Metode Pembayaran:</p>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary payment" id="cash">Cash</button>
+                                    <button type="button" class="btn btn-outline-secondary payment"
+                                        id="transfer">Transfer</button>
+                                </div>
+                                <input type="hidden" id="payment-method" name="payment_method" value="cash">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <h3>Catatan</h3>
+                                    <textarea class="form-control" rows="3" name="note" placeholder="Catatan ..." id="note"></textarea>
+                                </div>
+                            </div>
                         </div>
                         <!-- /.col -->
                         <div class="col-6">
@@ -186,13 +194,13 @@
         @slot('title', 'Cari Customer')
 
         @slot('body')
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Nama Customer">
+            {{-- <div class="input-group">
+                <input type="text" class="form-control" id="customer-search" placeholder="Nama Customer">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary">Cari</button>
+                    <button type="button" class="btn btn-primary" onclick="searchCustomers()">Cari</button>
                 </div>
-            </div>
-            <table class="table table-bordered table-striped mt-2">
+            </div> --}}
+            <table class="datatable table table-bordered table-striped mt-2" id="datatable">
                 <thead>
                     <tr class="text-center">
                         <th class="align-middle" style="width: 2%">No</th>
@@ -215,13 +223,13 @@
         @slot('title', 'Cari Produk')
 
         @slot('body')
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Nama Produk">
+            {{-- <div class="input-group">
+                <input type="text" class="form-control" id="product-search" placeholder="Nama Produk">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary">Cari</button>
+                    <button type="button" class="btn btn-primary" onclick="searchProducts()">Cari</button>
                 </div>
-            </div>
-            <table class="table table-bordered table-striped mt-2">
+            </div> --}}
+            <table class="datatable table table-bordered table-striped mt-2">
                 <thead>
                     <tr class="text-center">
                         <th class="align-middle" style="width: 2%">No</th>
@@ -243,6 +251,25 @@
     <script>
         var productObject = [];
         var productIndex = 1;
+
+        var currentDate = new Date();
+        var month = currentDate.getMonth() + 1;
+        var day = currentDate.getDate();
+        var year = currentDate.getFullYear();
+        var formattedDate = month + '/' + day + '/' + year;
+        $("#deadline").val(formattedDate);
+
+        $('input').on('focus', function() {
+            $(this).select();
+
+            $(this).addClass('selected');
+        });
+
+        $('#note').on('input', function() {
+            var value = $(this).val()
+
+            $('#btn-bayar').prop('disabled', !value);
+        })
 
         $('.find-customer-btn').on('click', function() {
             url = "{{ route('findAllCustomer') }}"
@@ -307,7 +334,7 @@
                             html += '<tr>' +
                                 '<td class="align-middle">' + (index + 1) + '</td>' +
                                 '<td class="align-middle">' + product.name + '</td>' +
-                                '<td class="align-middle">' + product.price + '</td>' +
+                                '<td class="rupiah align-middle">' + product.price + '</td>' +
                                 '<td class="align-middle">' +
                                 '<button type="button" class="btn btn-success" onclick="selectProduct(' +
                                 product.id + ', \'' + product.name + '\', \'' + product.price +
@@ -327,11 +354,11 @@
             });
         });
 
-        $('#table-product').on('change', '[id^="qty_"]', function() {
+        $('#table-product').on('input', '[id^="qty_"]', function() {
             updateTotal($(this).attr('id'));
         });
 
-        $('#table-product').on('change', '[id^="price_"]', function() {
+        $('#table-product').on('input', '[id^="price_"]', function() {
             updatePrice($(this).attr('id'));
         });
 
@@ -404,7 +431,6 @@
             updateDeposit();
 
             var isProductObjectNotEmpty = productObject.length > 0;
-            $('#btn-bayar').prop('disabled', !isProductObjectNotEmpty);
 
             $('#table-product').html(html);
         }
@@ -476,8 +502,8 @@
                 qty = 1;
             }
 
-            var price = Math.round(total / qty);
-            priceInput.val(price);
+            var price = total / qty
+            priceInput.val(Math.round(price));
 
             totalInput.val(qty * price);
 

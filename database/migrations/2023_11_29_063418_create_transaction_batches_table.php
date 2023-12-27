@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('transaction_batches', function (Blueprint $table) {
             $table->id();
             $table->string('invoice');
-            $table->float('paid_amount');
+            $table->string('paid_amount');
             $table->string('payment_method');
             $table->string('deadline');
             $table->string('customer_id');
+            $table->string('note');
             $table->integer('type'); // Type Pemasukan / Pengeluaran
             $table->integer('status'); // Status Lunas / Belum Lunas
             $table->timestamps();

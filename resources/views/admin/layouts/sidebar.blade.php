@@ -157,16 +157,16 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('data-books') }}" class="nav-link">
+                        {{-- <li class="nav-item">
+                            <a href="{{ route('orders') }}" class="nav-link">
                                 <i class="nav-icon far fa-solid fa-scale-balanced"></i>
                                 <p>
-                                    Buku Besar
+                                    Pesanan
                                 </p>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
-                            <a href="{{ route('transactions') }}" class="nav-link">
+                            <a href="{{ url('admin/transaction') }}" class="nav-link">
                                 <i class="nav-icon far fa-solid fa-receipt"></i>
                                 <p>
                                     Transaksi
@@ -189,14 +189,14 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('stocks') }}" class="nav-link">
                                 <i class="nav-icon far fa-solid fa-box"></i>
                                 <p>
                                     Stok Barang
                                 </p>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a href="#" class="nav-link" onclick="logout()">
                                 <i class="nav-icon far fa-solid fa-right-to-bracket"></i>

@@ -26,12 +26,15 @@ class CashierController extends Controller
             'qty'           => 'required',
             'price'         => 'required',
             'total'         => 'required',
+            'note'          => 'required',
             'deadline'      => 'required',
             'grand_total'   => 'required',
             'deposits'      => 'required',
             'paid_amount'   => 'required',
             'payment_method'=> 'required',
         ]);
+
+        // echo "<pre>";print_r($request->total);die;
 
         if ($request->customer_id) {
             $customer = CustomerModel::find($request->customer_id);
@@ -56,6 +59,7 @@ class CashierController extends Controller
         $batch->invoice = $request->invoice;
         $batch->paid_amount = $request->paid_amount;
         $batch->payment_method = $request->payment_method;
+        $batch->note = $request->note;
         $batch->deadline = $request->deadline;
         $batch->customer_id = $customer->id;
         $batch->type = 1;
@@ -81,8 +85,6 @@ class CashierController extends Controller
             $array[] = $transaction;
         }
 
-        dd([$customer, $batch, $array]);
-
-
+        return redirect()->route('cashier')->with('success', 'Berhasil menambah pesanan');
     }
 }

@@ -16,8 +16,8 @@
                 <div class="info-box-content">
                     <span class="info-box-text">Jumlah Pesanan</span>
                     <span class="info-box-number">
-                        10
-                        <small>%</small>
+                        @currency($datas['total_order'])
+                        
                     </span>
                 </div>
                 <!-- /.info-box-content -->
@@ -30,8 +30,8 @@
                 <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-solid fa-sack-dollar"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">Total Laba</span>
-                    <span class="info-box-number">41,410</span>
+                    <span class="info-box-text">Total Omzet</span>
+                    <span class="info-box-number">@currency($datas['omzet'])</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -60,8 +60,8 @@
                 <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">New Members</span>
-                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-text">Total Customer</span>
+                    <span class="info-box-number">@currency($datas['customer'])</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
