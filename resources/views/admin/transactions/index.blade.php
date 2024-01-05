@@ -42,10 +42,10 @@
                             <th class="align-middle" style="width: 2%">No</th>
                             <th class="align-middle" style="width: 15%">Tanggal</th>
                             <th class="align-middle" style="width: 15%">Invoice</th>
-                            <th class="align-middle" style="width: 15%">Nama Customer</th>
+                            <th class="align-middle" style="width: 10%">Nama Customer</th>
                             <th class="align-middle" style="width: 15%">Sisa Pembayaran</th>
                             <th class="align-middle" style="width: 15%">Total</th>
-                            <th class="align-middle" style="width: 15%">Status Pembayaran</th>
+                            <th class="align-middle" style="width: 20%">Status Pembayaran</th>
                             <th class="align-middle" style="width: 3%">Aksi</th>
                         </tr>
                     </thead>
@@ -56,21 +56,21 @@
                                 <td class="align-middle">{{ $data['batch']->created_at->format('d F Y') }}</td>
                                 <td class="align-middle">{{ $data['batch']->invoice }}</td>
                                 <td class="align-middle">{{ $data['batch']->name }}</td>
-                                <td class="align-middle">Rp. @currency($data['batch']->paid_amount)</td>
-                                <td class="align-middle">Rp. @currency($data['total'])</td>
+                                <td class="align-middle text-right">Rp. @currency($data['batch']->paid_amount)</td>
+                                <td class="align-middle text-right">Rp. @currency($data['total'])</td>
                                 <td class="align-middle">
                                     @if ($data['batch']->status == 1)
-                                        <span class="badge bg-success">Lunas</span>
+                                        <span class="badge m-1 bg-success">Lunas</span>
                                     @else
-                                        <span class="badge bg-danger">Belum Lunas</span>
+                                        <span class="badge m-1 bg-danger">Belum Lunas</span>
                                     @endif
                                     |
                                     @if ($data['batch']->type == 1)
-                                        <span class="badge bg-warning">Proses</span>
+                                        <span class="badge m-1 bg-warning">Proses</span>
                                     @elseif($data['batch']->type == 2)
-                                        <span class="badge bg-success">Selesai</span>
+                                        <span class="badge m-1 bg-success">Selesai</span>
                                     @elseif($data['batch']->type == 3)
-                                        <span class="badge bg-danger">Dibatalkan</span>
+                                        <span class="badge m-1 bg-danger">Dibatalkan</span>
                                     @endif
                                 </td>
                                 <td class="align-middle">
@@ -97,51 +97,58 @@
         @slot('title', 'Transaksi')
 
         @slot('body')
+            <input type="hidden" id="trx-id">
             <div class="row">
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Tanggal</label>
+                        <label>Tanggal :</label>
                         <input type="text" class="form-control" id="date" disabled>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Invoice</label>
+                        <label>Invoice :</label>
                         <input type="text" class="form-control" id="invoice" disabled>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Customer</label>
+                        <label>Customer :</label>
                         <input type="text" class="form-control" id="customer" disabled>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>No. Handphone</label>
+                        <label>No. Handphone :</label>
                         <input type="text" class="form-control" id="phone" disabled>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Total Pembelian</label>
+                        <label>Total Pembelian :</label>
                         <input type="text" class="form-control" id="total" disabled>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Sisa Pembayaran</label>
+                        <label>Sisa Pembayaran :</label>
                         <input type="text" class="form-control" id="paid" disabled>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Catatan :</label>
+                        <textarea id="note" class="form-control" disabled></textarea>
                     </div>
                 </div>
                 <div class="col-12">
                     <table class="table table-bordered table-striped">
                         <thead>
-                            <tr>
-                                <th>No</th>
+                            <tr class="text-center">
                                 <th>Produk</th>
                                 <th>Qty</th>
-                                <th>Total Harga</th>
+                                <th>Harga</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody id="trx-details">
@@ -153,12 +160,24 @@
         @endslot
 
         @slot('button')
-            <button type="button" class="btn btn-success" id="btn-pay">
-                Bayar Sisa
-            </button>
-            <button type="button" class="btn btn-info" id="btn-print">
-                Print
-            </button>
+            <div id="btns"></div>
+        @endslot
+    @endcomponent
+
+    @component('components.modal', [
+        'id' => 'modal-pay',
+    ])
+        @slot('title', 'Nominal')
+
+        @slot('body')
+            <div class="form-group">
+                <label id="label">Nominal Pembayaran: (Yang harus dibayarkan = )</label>
+                <input type="text" class="form-control" id="nominal">
+            </div>
+        @endslot
+
+        @slot('button')
+            <div class="btn btn-success" id="btn-bayar-sisa">Bayar</div>
         @endslot
     @endcomponent
 
@@ -173,37 +192,6 @@
         $('#type-dropdown').on('change', function() {
             redirectToTransaction();
         });
-
-        $('#btn-pay').on('click', function() {
-            $('#paid').prop('disabled', false).focus();
-        });
-
-        $('#paid').on('blur', function() {
-            showConfirmationModal();
-        })
-
-        function showConfirmationModal() {
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Apakah Anda ingin mengubah nilai "Sisa Pembayaran"?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-                showCloseButton: true,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Implement your AJAX request here
-                    // Example: ajaxUpdatePaidValue();
-                } else if (result.dismiss === Swal.DismissReason.close) {
-                    // If closed, focus on the "Paid" input
-                    $('#paid').focus();
-                } else {
-                    // If canceled, disable the "Paid" input and return focus
-                    $('#paid').prop('disabled', true).focus();
-                }
-            });
-        }
 
         function redirectToTransaction() {
             var statusValue = $('#status-dropdown').val();
@@ -223,21 +211,25 @@
                 url: 'transaction/findOne/' + batchId,
                 type: 'GET',
                 success: function(response) {
+                    $('#trx-id').val(response.batch.id);
                     $('#date').val(response.batch.created_at);
                     $('#invoice').val(response.batch.invoice);
                     $('#customer').val(response.batch.name);
                     $('#phone').val(response.batch.phone);
                     $('#total').val(response.total);
                     $('#paid').val(response.batch.paid_amount);
+                    $('#note').val(response.batch.note);
 
                     $('#trx-details').empty();
 
                     var rows = response.trx.map(function(trx) {
                         return '<tr>' +
-                            '<td>' + trx.id + '</td>' +
-                            '<td>' + trx.name + '</td>' +
-                            '<td>' + trx.qty + '</td>' +
-                            '<td>Rp. ' + (trx.total_price).toLocaleString('id-ID') + '</td>' +
+                            '<td>' + trx.product_name + '</td>' +
+                            '<td class="text-center">' + trx.qty + '</td>' +
+                            '<td class="text-right">Rp. ' + (trx.unit_price).toLocaleString(
+                                'id-ID') + '</td>' +
+                            '<td class="text-right">Rp. ' + (trx.total_price).toLocaleString(
+                                'id-ID') + '</td>' +
                             '</tr>';
                     });
 
@@ -249,11 +241,107 @@
 
                     $('#trx-details').html(rows.join(''));
 
+                    var btn = ''
+
+                    if (response.batch.status == 0) {
+                        btn +=
+                            '<button type="button" class="btn btn-success mr-1" id="btn-pay">Bayar Sisa</button>';
+                    }
+
+                    if (response.batch.type == 1) {
+                        btn +=
+                            '<button type="button" class="btn btn-danger mr-1" id="btn-batal">Batalkan Pesanan</button>' +
+                            '<button type="button" class="btn btn-primary mr-1" id="btn-finish">Pesanan Selesai</button>';
+                    }
+
+                    $('#btns').html(btn)
+
 
                     $('#modal-info').modal('show');
                 },
                 error: function(err) {
                     console.error(err);
+                }
+            });
+        });
+
+        $(document).on('click', '#btn-pay', function() {
+            const paidValue = $('#paid').val() || 0;
+
+            $('#label').html(`Nominal Pembayaran: (Yang harus dibayarkan = Rp. ${paidValue})`);
+
+            $('#modal-pay').modal('show');
+        });
+
+        // $(document).on('input', '#nominal', function() {
+        //     const max = $('#paid').val() || 0;
+            
+        //     if ($(this).val > max) {
+        //         $(this).val(max)
+        //     } else ($(this).val < 0) {
+        //         $(this).val(0)
+        //     }
+        // });
+
+        $(document).on('click', '#btn-bayar-sisa', function() {
+            const nominalValue = parseFloat($('#nominal').val().replace(/[^0-9.]/g, '')) || 0;
+
+            console.log('Nominal yang dibayar:', nominalValue);
+
+            // Tempatkan logika pengiriman pembayaran AJAX Anda di sini
+            // ...
+
+            // Tutup modal pembayaran
+            $('#modal-pay').modal('hide');
+        });
+
+
+        $(document).on('click', '#btn-batal', function() {
+            Swal.fire({
+                title: "Peringatan",
+                icon: 'warning',
+                text: "Apakah anda yakin untuk membatalkan pesanan ini?",
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const id = $('#trx-id').val();
+                    $.ajax({
+                        url: `transaction/cancel/${id}`,
+                        method: 'GET',
+                        success: function(response) {
+                            location.reload();
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            console.error(error);
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '#btn-finish', function() {
+            Swal.fire({
+                title: "Peringatan",
+                icon: 'warning',
+                text: "Apakah anda yakin menyelesaikan pesanan ini?",
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const id = $('#trx-id').val();
+                    $.ajax({
+                        url: `transaction/finish/${id}`,
+                        method: 'GET',
+                        success: function(response) {
+                            location.reload();
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            console.error(error);
+                            location.reload();
+                        }
+                    });
                 }
             });
         });

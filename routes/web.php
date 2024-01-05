@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\ProductContorller;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -35,11 +36,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::controller(TransactionController::class)->prefix('transaction')->group(function () {
         Route::get('/', 'index')                    ->name('transactions');
         Route::get('/findOne/{id}', 'findOne')      ->name('findOne');
+        Route::get('/cancel/{id}', 'cancellation')  ->name('cancellation');
+        Route::get('/finish/{id}', 'finishOrder')   ->name('finishOrder');
     });
 
     Route::controller(CashierController::class)->prefix('cashier')->group(function () {
         Route::get('/', 'index')                    ->name('cashier');
         Route::post('/', 'transaction')             ->name('transaction');
+        Route::get('/reciept', 'printReceipt')      ->name('reciept');
     });
 
     Route::controller(CustomerController::class)->prefix('customers')->group(function () {

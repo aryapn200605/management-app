@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\TransactionBatches;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 
@@ -25,9 +26,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('invoiceNumber', function () {
-            return "<?php echo 'TRX-' . date('YmdHis'); ?>";
+            $prefix = date('y');
+            $nextNumber = str_pad(TransactionBatches::count() + 1, 10, '0', STR_PAD_LEFT); 
+        
+            return "<?php echo 'TRX-$prefix$nextNumber'; ?>";
         });
-
+        
         Blade::directive('shortenText', function ($expression) {
             return "<?php echo str_word_count($expression, 2) > 10 ? implode(' ', array_slice(str_word_count($expression, 2), 0, 10)) . '...' : $expression; ?>";
         });

@@ -121,7 +121,7 @@
                 @csrf
                 <div class="form-group">
                     <label>File Excel</label>
-                    <input type="file" class="form-control" name="file" placeholder="Masukan File Produk" required>
+                    <input type="file" class="form-control-file" name="file" placeholder="Masukan File Produk" required>
                 </div>
             @endslot
 

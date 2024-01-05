@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\TransactionBatches;
+use Exception;
 use Illuminate\Http\Request;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class TransactionController extends Controller
 {
@@ -21,7 +25,7 @@ class TransactionController extends Controller
         } else if ($status == 'belum-lunas') {
             $batches->where('transaction_batches.status', 0);
         }
-        
+
         if ($type == 'proses') {
             $batches->where('transaction_batches.type', 1);
         } else if ($type == 'selesai') {
@@ -46,6 +50,8 @@ class TransactionController extends Controller
             ];
         }
 
+        // dd($datas);
+
         return view('admin.transactions.index', ['datas' => $datas, 'type' => $type, 'status' => $status]);
     }
 
@@ -60,9 +66,7 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Transaksi tidak ditemukan'], 404);
         }
 
-        $transactions = Transaction::where('batch_id', $batch->invoice)
-            ->join('products', 'transaction.product_id', '=', 'products.id')
-            ->get();
+        $transactions = Transaction::where('batch_id', $batch->invoice)->get();
         $total = $transactions->sum('total_price');
 
         $data = [
@@ -72,5 +76,31 @@ class TransactionController extends Controller
         ];
 
         return response()->json($data);
+    }
+
+    public function cancellation(String $id)
+    {
+        $trx = TransactionBatches::find($id);
+
+        if ($trx) {
+            $trx->type = 3;
+            $trx->save();
+            return response('Success cancel the transaction', 200);
+        } else {
+            return response('Transaction not found', 404);
+        }
+    }
+
+    public function finishOrder(String $id)
+    {
+        $trx = TransactionBatches::find($id);
+
+        if ($trx) {
+            $trx->type = 2;
+            $trx->save();
+            return response('Success finish the transaction', 200);
+        } else {
+            return response('Transaction not found', 404);
+        }
     }
 }

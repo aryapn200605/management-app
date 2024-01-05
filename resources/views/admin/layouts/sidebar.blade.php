@@ -19,7 +19,7 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
 
-                <!-- Messages Dropdown Menu -->
+                {{-- <!-- Messages Dropdown Menu -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-comments"></i>
@@ -107,7 +107,7 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
                     </div>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
@@ -181,19 +181,11 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('products') }}" class="nav-link">
                                 <i class="nav-icon far fa-solid fa-store"></i>
                                 <p>
                                     Produk
-                                </p>
-                            </a>
-                        </li>
-                        {{-- <li class="nav-item">
-                            <a href="{{ route('stocks') }}" class="nav-link">
-                                <i class="nav-icon far fa-solid fa-box"></i>
-                                <p>
-                                    Stok Barang
                                 </p>
                             </a>
                         </li> --}}

@@ -5,86 +5,102 @@ namespace App\Http\Controllers;
 use App\Models\CustomerModel;
 use App\Models\Transaction;
 use App\Models\TransactionBatches;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class CashierController extends Controller
 {
     public function index()
     {
-        return view('admin.cashier.index');
+        $auth = Auth::user();
+        $user = User::where('id', $auth->id)->first();
+        return view('admin.cashier.index', ['printer' => $user->printer]);
     }
 
     public function transaction(Request $request)
     {
-        // dd($request);
         $request->validate([
-            'customer'      => 'required',
+            'customerName'      => 'required',
             'invoice'       => 'required',
             'phone'         => 'required',
-            'date'          => 'required',
-            'product_id'    => 'required',
-            'qty'           => 'required',
-            'price'         => 'required',
-            'total'         => 'required',
+            'datas'          => 'required',
             'note'          => 'required',
             'deadline'      => 'required',
-            'grand_total'   => 'required',
+            'grandTotal'   => 'required',
             'deposits'      => 'required',
-            'paid_amount'   => 'required',
-            'payment_method'=> 'required',
+            'paidAmount'   => 'required',
+            'paymentMethod' => 'required',
         ]);
-
-        // echo "<pre>";print_r($request->total);die;
-
-        if ($request->customer_id) {
-            $customer = CustomerModel::find($request->customer_id);
         
-            if ($customer) {
-                $customer->transaction_total += 1;
-                $customer->save();
-            }
+        if ($request->customer_id) {
+                $customer = CustomerModel::find($request->customer_id);
+            
+                if ($customer) {
+                        $customer->transaction_total += 1;
+                        $customer->save();
+                    }
         } else {
             $customer = new CustomerModel();
         
-            $customer->name = $request->input('customer');
-            $customer->phone = $request->input('phone');
+            $customer->name = $request->customerName;
+            $customer->phone = $request->phone;
             $customer->address = "none";
             $customer->transaction_total = 1;
-        
+
             $customer->save();
         }
 
         $batch = new TransactionBatches();
 
         $batch->invoice = $request->invoice;
-        $batch->paid_amount = $request->paid_amount;
-        $batch->payment_method = $request->payment_method;
+        $batch->paid_amount = $request->paidAmount;
+        $batch->payment_method = $request->paymentMethod;
         $batch->note = $request->note;
         $batch->deadline = $request->deadline;
         $batch->customer_id = $customer->id;
         $batch->type = 1;
 
-        if ($request->paid_amount == 0) {
+        if ($request->paidAmount == 0) {
             $batch->status = 1;
         } else {
             $batch->status = 0;
         }
-        
+
         $batch->save();
-        $array = [];
-        foreach ($request->product_id as $i => $product) {
-            $transaction = new Transaction();
-
-            $transaction->qty = $request->qty[$i];
-            $transaction->unit_price = $request->price[$i];
-            $transaction->total_price = $request->total[$i];
-            $transaction->product_id = $request->product_id[$i];
-            $transaction->batch_id = $request->invoice;
-
-            $transaction->save();
-            $array[] = $transaction;
+        
+        foreach ($request->datas as $data) {
+            $trx = new Transaction();
+            
+            $trx->qty = $data['qty'];
+            $trx->unit_price = $data['price'];
+            $trx->total_price = $data['total'];
+            $trx->product_name = $data['product'];
+            $trx->batch_id = $request->invoice;
+            
+            $trx->save();
         }
-
-        return redirect()->route('cashier')->with('success', 'Berhasil menambah pesanan');
+        
+        return response('success', 200);
+    }
+    
+    public function printReceipt(Request $request)
+    {
+        $data = [
+            'title' => 'Contoh PDF',
+            'content' => 'Ini adalah konten PDF.',
+        ];
+        
+        // Generate PDF dengan ukuran kertas kustom (57mm lebar, 100mm tinggi)
+        $pdf = Pdf::loadView('pdf.view', $data)->setPaper([0, 0, 57, 100]);
+    
+        // Tampilkan PDF
+        return $pdf->stream();
     }
 }
